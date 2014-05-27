@@ -1,1 +1,5 @@
+export(neighbors)
+export(pick_neighbors)
 export(printHelloWorld)
+export(profit)
+export(profit_landscape)

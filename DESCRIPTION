@@ -1,5 +1,5 @@
 Package: HelloWorld
-Title: Print Hello World
+Title: Least Ascent model
 Version: 0.1
 Authors@R: "Skylar Smith <first.last@example.com> [aut, cre]"
 Description: This is a sample package printing Hello World!
