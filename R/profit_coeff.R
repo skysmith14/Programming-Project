@@ -1,6 +1,6 @@
 #' Generate random coefficients
 #' 
-#' Generates random coefficients for profit function in between -1 and 1
+#' Generate random coefficients for profit function in between -1 and 1
 #' @param nodes The number of places to divide the budget among
 #' @param budget_A The budget allocation
 #' @return Returns a vector of the random coefficients (same length as profit function terms)

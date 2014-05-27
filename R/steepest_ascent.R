@@ -1,6 +1,6 @@
 #' Pick highest Ascent
 #' 
-#' Chooses the neighbor having the highest profit
+#' Choose the neighbor having the highest profit
 #' @param neighbors The matrix of neighboring points
 #' @return The neighbor with the highest profit
 #' @export

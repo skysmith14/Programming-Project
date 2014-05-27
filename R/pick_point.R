@@ -1,6 +1,6 @@
 #' Select Random Point (or budget allocation)
 #' 
-#' Takes budget and nodes to generate a random distrubtion of the budget over the nodes
+#' Take budget and nodes to generate a random distrubtion of the budget over the nodes
 #' @param nodes The number of places to divide the budget amongst
 #' @param budget The amount of money to spend across the nodes
 #' @return Returns a vector of the allocation of budget across the given nodes

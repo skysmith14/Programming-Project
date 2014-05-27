@@ -1,6 +1,6 @@
 #' Find neighbors
 #' 
-#' Takes the number of nodes and the budget allocation and detemines nieghboring points 
+#' Take the number of nodes and the budget allocation and detemines nieghboring points 
 #' @param nodes The number of places to divide the budget among
 #' @param budget_A The allocation of the budget for each node
 #' @return Returns vector of neighboring budget allocation vectors

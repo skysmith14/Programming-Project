@@ -1,6 +1,6 @@
 #' Create a landscape
 #' 
-#' Takes the number of nodes and the budget and return the budget allocation for each node
+#' Take the number of nodes and the budget and return the budget allocation for each node
 #' @param nodes The number of places to divide the budget among
 #' @param budget The amount of money to invest
 #' @return budget allocation for each node in the form of a vector (each spot in vector correlates to a budget allocation for a node)
