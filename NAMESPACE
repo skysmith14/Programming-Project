@@ -1,5 +1,6 @@
 export(neighbors)
-export(pick_neighbors)
+export(pick_profit)
 export(printHelloWorld)
 export(profit)
-export(profit_landscape)
+export(profit_coeff)
+export(steepest_ascent)
