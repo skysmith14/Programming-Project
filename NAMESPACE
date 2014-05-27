@@ -1,5 +1,5 @@
 export(neighbors)
-export(pick_profit)
+export(pick_point)
 export(printHelloWorld)
 export(profit)
 export(profit_coeff)
