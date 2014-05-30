@@ -1,3 +1,14 @@
+<<<<<<< HEAD
+export(neighbors)
+export(pick_point)
+<<<<<<< HEAD
+=======
+export(printHelloWorld)
+>>>>>>> 831848fbd98340d1337f650a6e67a08405f2f688
+export(profit)
+export(profit_coeff)
+export(steepest_ascent)
+=======
 export(hillclimb)
 export(neighbors)
 export(pick_point)
@@ -6,3 +17,4 @@ export(profit_coeff)
 export(profit_neighbors)
 export(steepest_ascent)
 exportClasses(landscape)
+>>>>>>> a821ca52cf2cf842bd56e93d2edd2897fccd0362
