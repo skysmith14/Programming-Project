@@ -1,0 +1,161 @@
+
+========================================================
+/documentclass{article}
+/begin{document}
+/title{Local Hillclimbing on an Economic Landscape - model}
+/author{Skylar Smith}
+/maketitle
+
+This R package models and represents the ideas and concepts presented in the publish paper, **Local HillClimbing on an Economic Landscape** (David Kane, Santa Fe Institute). This package centers on a model of an economic landscape defined by a budget, the number of nodes to allocate the budget among, a monetary unit of transfer between nodes to (ideally) improve profit, and a vector of random coefficients between -1 and 1 that are mupltipled by the profit function to mimic the complexity inherent in any real economic landscape.
+
+To represent this definition of a landscape, this package contains a landscape class with slots for each of the above-mentioned parameters. 
+
+```{r}
+setClass("landscape", slots = c(nodes = "numeric", budget = "numeric", coeff = "vector", unit = "numeric"))
+```
+
+To generate random profit coefficients, this package uses the profit_coeff() function:
+```{r}
+profit_coeff <- function (nodes){     
+        sum <- 0
+        for (i in 1:nodes -1){
+                sum <- sum + i
+        }
+        number_of_coeff <- 2*nodes + sum
+        coeff_vec <- c()
+        for (i in 1:number_of_coeff){
+                new_coeff <- runif (1, min = -1, max = 1)
+                coeff_vec <- c(coeff_vec, new_coeff)
+        }
+        return(coeff_vec)
+}
+```
+
+A simplied example of one such landscape with a budget of $100 allocated among 25 nodes is as follows:
+```{r}
+landscape1 <- new ("landscape", nodes = 10, budget = 1000, coeff = profit_coeff(nodes = 10), unit = 1)
+```
+
+To represent the action of hillclimbing, this package allows the user to pick a random point on the landspace (or a randomly-generated budget allocation for the landscape parameters specified above) using the pick_point() function below, and calculates the profit for that budget allocation. 
+
+```{r}
+pick_point <- function (nodes, budget){
+        current <- sample(0:budget, 1)
+        budget_allocation <- c()
+        total <- 0
+        for (i in 1:nodes){
+                total <- total + current
+                budget_allocation <- c(budget_allocation, current)
+                if (i == nodes-1 || total == budget){
+                        current <- budget - total
+                }
+                else{
+                        current <- sample(0:(budget-total), 1)   
+                }
+        }
+        print(budget_allocation)
+        return(budget_allocation)
+}
+```
+```{r}
+point <- pick_point(nodes = 10,budget = 1000)
+```
+
+To reflect the complexity in any economic landscape, the profit function comprises the (linear) terms of the budget allocation vector, its squares, and its cross products. This vector, multipled by a set vector of random coefficients (described above), comprises the profit function for this landscape model.
+
+```{r}
+profit <- function(nodes, budget_A, coeff_vec){     
+        profit_sum <- c()
+        for (i in 1:nodes){
+                new_val <- budget_A[i]
+                profit_sum <- c(profit_sum, new_val)
+        }
+        for (i in 1:nodes){
+                new_val <- (budget_A[i])^2
+                profit_sum <- c(profit_sum, new_val)        
+        }
+        for (i in 1:(nodes-1)){
+                for (z in (i+1):nodes){
+                        new_val <- (budget_A[i]*budget_A[z])
+                        profit_sum <- c(profit_sum, new_val)
+                }
+        }
+        print(profit)
+        profit <- sum(profit_sum*coeff_vec)
+}
+```
+```{r}
+profit_for_point <- profit(10, point, landscape1@coeff)
+```
+
+The package then can calculate all neighboring points (defined by the monetary unit of transfer) using the neighbors() function below and their profits using the same profit function (with the same coefficients). 
+
+```{r}
+neighbors <- function (nodes, budget_A){
+        grand <- matrix(ncol = nodes)
+        for (i in 1:nodes){
+                a <- i
+                new1 <- c(budget_A)
+                new1[i] <- new1[i] + 1
+                if (i==nodes){
+                        i <- 0
+                }
+                new1[i+1] <- new1[i+1] - 1
+                for (z in 1:nodes){
+                        if (new1[z]<0){
+                                new1 <- c()
+                                break
+                        }
+                }
+                new2 <- c(budget_A)
+                new2[a] <- new2[a] - 1
+                if (a==nodes){
+                        a <- 0
+                }
+                new2[a+1] <- new2[a+1] + 1
+                for (y in 1:nodes){
+                        if (new2[y]<0){
+                                new2 <- c()
+                                break
+                        }
+                }
+                grand <- rbind(grand, new1, new2)
+        }
+        dimnames(grand) <-list(rep("", dim(grand)[1]), rep("", dim(grand)[2]))
+        grand
+        valid_neighbors <- grand[complete.cases(grand),]
+        print(valid_neighbors)
+        return(valid_neighbors)
+}
+```
+```{r}
+neighbors_of_point <- neighbors(10, point)
+```
+```{r}
+profit_neighbors <- function(landscape, neighbors){
+        profit_vec <- c()
+        for (i in 1:nrow(neighbors)){
+                new_profit <- profit(landscape@nodes, neighbors[i,], landscape@coeff)
+                profit_vec <- c(profit_vec, new_profit)
+        }
+        print(profit_vec)
+        return (profit_vec)
+}
+```
+```{r}
+neighboring_profits <- profit_neighbors(landscape1, neighbors_of_ppoint)
+```
+
+This package provides the user with the tools necessary to test out three different approaches to "economic hillclimbing," or finding local (ideally, the global) profit maxima for budget allocation. These strategies include steepest ascent (choosing the highest neighboring point as one's next budget allocation), median ascent (choosing the median neighboring point), and lowest ascent (choosing the lowest neighboring point whose profit is still above that of the current point or budget allocation). Below are tables that display the results from 20 iterations of each approach within the same landscape:
+
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r fig.width=7, fig.height=6}
+plot(cars)
+```
+
