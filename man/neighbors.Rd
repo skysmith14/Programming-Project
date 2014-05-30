@@ -16,6 +16,6 @@ Returns vector of neighboring budget allocation vectors
 }
 \description{
 Takes the number of nodes and the budget allocation and
-detemines nieghboring points
+detemines neighboring points
 }
 

@@ -2,15 +2,22 @@
 \alias{steepest_ascent}
 \title{Pick highest Ascent}
 \usage{
-steepest_ascent(neighbors)
+steepest_ascent(neighbors, neighbor_profits, point_profit)
 }
 \arguments{
   \item{neighbors}{The matrix of neighboring points}
+
+  \item{neighbor_profits}{The vector of the profits of each
+  neighboring point}
+
+  \item{point_profit}{The profit of the current point}
 }
 \value{
 The neighbor with the highest profit
 }
 \description{
-Chooses the neighbor having the highest profit
+Chooses the neighboring point that has the highest profit
+(or the current point if its profit is higher than that of
+any of its neighbors)
 }
 

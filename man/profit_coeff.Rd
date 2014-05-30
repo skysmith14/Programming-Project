@@ -7,8 +7,6 @@ profit_coeff(nodes)
 \arguments{
   \item{nodes}{The number of places to divide the budget
   among}
-
-  \item{budget_A}{The budget allocation}
 }
 \value{
 Returns a vector of the random coefficients (same length as
