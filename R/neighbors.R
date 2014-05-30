@@ -1,6 +1,6 @@
 #' Find neighbors
 #' 
-#' Takes the number of nodes and the budget allocation and detemines nieghboring points 
+#' Takes the number of nodes and the budget allocation and detemines neighboring points 
 #' @param nodes The number of places to divide the budget among
 #' @param budget_A The allocation of the budget for each node
 #' @return Returns vector of neighboring budget allocation vectors
@@ -36,6 +36,9 @@ neighbors <- function (nodes, budget_A){
                 }
                 grand <- rbind(grand, new1, new2)
         }
-        ma <- grand[complete.cases(grand),]
-        #print(ma)
+        dimnames(grand) <-list(rep("", dim(grand)[1]), rep("", dim(grand)[2]))
+        grand
+        valid_neighbors <- grand[complete.cases(grand),]
+        #print(valid_neighbors)
+        return(valid_neighbors)
 }

@@ -20,6 +20,6 @@ pick_point <- function (nodes, budget){
                         current <- sample(0:(budget-total), 1)   
                 }
         }
-        
+        #print(budget_allocation)
         return(budget_allocation)
 }
