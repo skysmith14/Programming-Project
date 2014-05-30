@@ -1,10 +1,19 @@
 Package: HelloWorld
 Title: Least Ascent model
 Version: 0.1
+<<<<<<< HEAD
 Authors@R: "Skylar Smith <first.last@example.com> [aut, cre]"
+=======
+Authors.R: "Skylar Smith <first.last@example.com> [aut, cre]"
+>>>>>>> a821ca52cf2cf842bd56e93d2edd2897fccd0362
 Description: This is a sample package printing Hello World!
 Maintainer: Skylar Smith <skysmith14@gmail.com>
 Depends:
     R (>= 3.0.3)
 License: What license is it under?
 LazyData: true
+<<<<<<< HEAD
+=======
+Suggests:
+    testthat
+>>>>>>> a821ca52cf2cf842bd56e93d2edd2897fccd0362
