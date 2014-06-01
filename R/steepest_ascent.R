@@ -9,9 +9,6 @@
 
 steepest_ascent <- function (neighbors, neighbor_profits, point_profit){
        pos_of_highest <- which.max(neighbor_profits)
-       #print(neighbor_profits)
-       #print(point_profit)
-       #print(neighbors)
        if (neighbor_profits[pos_of_highest] < point_profit){
                cat(sprintf("You've reached the local maxima of %f", point_profit))
                return("!")

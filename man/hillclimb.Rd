@@ -2,7 +2,7 @@
 \alias{hillclimb}
 \title{Hillclimb a landscape using steepest ascent}
 \usage{
-hillclimb(landscape, point)
+hillclimb(landscape, point, ascent_type)
 }
 \arguments{
   \item{lanscape}{A landscape object (previously

@@ -143,17 +143,108 @@ profit_neighbors <- function(landscape, neighbors){
 }
 ```
 ```{r}
-neighboring_profits <- profit_neighbors(landscape1, neighbors_of_ppoint)
+neighboring_profits <- profit_neighbors(landscape1, neighbors_of_point)
 ```
 
-This package provides the user with the tools necessary to test out three different approaches to "economic hillclimbing," or finding local (ideally, the global) profit maxima for budget allocation. These strategies include steepest ascent (choosing the highest neighboring point as one's next budget allocation), median ascent (choosing the median neighboring point), and lowest ascent (choosing the lowest neighboring point whose profit is still above that of the current point or budget allocation). Below are tables that display the results from 20 iterations of each approach within the same landscape:
-
+This package provides the user with the tools necessary to test out three different approaches to "economic hillclimbing," or finding local (ideally, the global) profit maxima for budget allocation. These strategies include steepest ascent (choosing the highest neighboring point as one's next budget allocation), median ascent (choosing the median neighboring point), and lowest ascent (choosing the lowest neighboring point whose profit is still above that of the current point or budget allocation). Below are functions for each respective strategy:
 
 ```{r}
-summary(cars)
+steepest_ascent <- function (neighbors, neighbor_profits, point_profit){
+       pos_of_highest <- which.max(neighbor_profits)
+       if (neighbor_profits[pos_of_highest] < point_profit){
+               cat(sprintf("You've reached the local maxima of %f", point_profit))
+               return("!")
+       }
+       else{
+               next_point <- neighbors[pos_of_highest,]
+               return(next_point)    
+       }
+}
+```
+```{r}
+median_ascent <- function (neighbors, neighbor_profit, point_profit){
+        improvement <- neighbor_profit[neighbor_profit > point_profit]
+        if (length(improvement) == 0){
+                cat(sprintf("You've reached the local maxima of %f", point_profit))
+                return("!")
+        }
+        else{
+                median_profit <- median(improvement)
+                if (length(improvement) %% 2 == 0){
+                        median_profit <- neighbor_profit[which.min(abs(neighbor_profit-median_profit))]
+                }
+                pos <- match(median_profit, neighbor_profit)
+                return (neighbors[pos,])
+        }  
+}
+
+```
+```{r}
+least_ascent <- function (neighbors, neighbor_profit, point_profit){
+        improvement <- neighbor_profit[neighbor_profit > point_profit]
+        if (length(improvement) == 0){
+                cat(sprintf("You've reached the local maxima of %f", point_profit))
+                return("!")
+        }
+        else{
+                 new_profit <- min(improvement)
+                 print(new_profit)
+        }
+        pos <- match(new_profit, neighbor_profit)
+        return (neighbors[pos,])
+}
 ```
 
-You can also embed plots, for example:
+Using a function called hillclimb(), this package allows the user to iterate one of the three strategies (20 times) described above so as to determine the best strategy for economic hillclimbing in a complex landscape.
+```{r}
+hillclimb <- function (landscape, point, ascent_type){
+        sequence <- matrix(ncol = 4)
+        for (i in 1:20){
+                if (ascent_type == "steepest_ascent"){
+                        next_point <- steepest_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape3,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
+                }
+                if (ascent_type == "median_ascent"){
+                        next_point <- median_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape3,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
+                }
+                if (ascent_type == "least_ascent"){
+                        next_point <- least_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape3,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
+                }
+                        #print("next point")
+                if (class(next_point) == "character"){
+                        cat(sprintf("after the %.f iteration", i))
+                        break
+                }
+                else{
+                        sequence <- rbind(sequence, next_point)
+                        point <- next_point       
+                }
+                 
+        }
+        dimnames(sequence) <-list(rep("", dim(sequence)[1]), rep("", dim(sequence)[2]))
+        sequence
+        valid_sequence <- sequence[complete.cases(sequence),]
+        print(" ")
+        cat("Hillclimbing sequence:")
+        return(valid_sequence)
+}
+```
+
+```{r}
+steep_ascent <- hillclimb(landscape1, point, steepest_ascent)
+saveCache(steep_ascent)
+```
+```{r}
+med_ascent <- hillclimb(landscape1, point, median_ascent)
+saveCache(med_ascent)
+```
+```{r}
+small_ascent <- hillclimb(landscape1, point, least_ascent)
+saveCache(small_ascent)
+```
+
+```{r}
+data <- loadCache()
+```
 
 ```{r fig.width=7, fig.height=6}
 plot(cars)
