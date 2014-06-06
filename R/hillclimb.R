@@ -7,29 +7,29 @@
 #' @export
 #' 
 hillclimb <- function (landscape, point, ascent_type){
-        next_point <- c(5)
+        next_point <- c(5, 2)
         sequence <- matrix(ncol = landscape@nodes)
-        for (i in 1:100){
-                if (next_point == "!"){
-                        cat(sprintf("after the %.f iteration", i))
-                        break  
-                }
-                else if (identical(ascent_type, steepest_ascent) == TRUE){
-                        next_point <- steepest_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
+        while (length(next_point) > 1){
+                if (identical(ascent_type, steepest_ascent) == TRUE) {
+                        next_point <- steepest_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape, neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
                 }
                 else if (identical(ascent_type, median_ascent) == TRUE){
-                        next_point <- median_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))             
+                        next_point <- median_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape, neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
                 }
-                else if (identical(ascent_type, least_ascent) == TRUE){
-                        next_point <- least_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
+                else {
+                        next_point <- least_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape, neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
                 }
-                sequence <- rbind(sequence, as.numeric(next_point))
                 point <- next_point
+                sequence <- rbind(sequence, as.numeric(next_point))
         }
-        print(profit(landscape@nodes, point, landscape@coeff))
-        dimnames(sequence) <-list(rep("", dim(sequence)[1]), rep("", dim(sequence)[2]))
-        sequence
-        valid_sequence <- sequence[complete.cases(sequence),]
-        cat("Hillclimbing sequence:")
-        return(valid_sequence)
+        #print(point)
+        return(point)
+        #dimnames(sequence) <-list(rep("", dim(sequence)[1]), rep("", dim(sequence)[2]))
+        #sequence
+        #valid_sequence <- sequence[complete.cases(sequence),]
+        #cat("Hillclimbing sequence:")
+        #return(valid_sequence)
 }
+
+
+   

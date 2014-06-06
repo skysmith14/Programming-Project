@@ -2,7 +2,7 @@
 \alias{steepest_ascent}
 \title{Pick highest Ascent}
 \usage{
-steepest_ascent(neighbors, neighbor_profits, point_profit)
+steepest_ascent(neighbors, neighbor_prof, point_profit)
 }
 \arguments{
   \item{neighbors}{The matrix of neighboring points}

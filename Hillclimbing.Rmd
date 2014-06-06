@@ -6,247 +6,77 @@
 /author{Skylar Smith}
 /maketitle
 
+```{r}
+library(HelloWorld)
+```
+
 This R package models and represents the ideas and concepts presented in the publish paper, **Local HillClimbing on an Economic Landscape** (David Kane, Santa Fe Institute). This package centers on a model of an economic landscape defined by a budget, the number of nodes to allocate the budget among, a monetary unit of transfer between nodes to (ideally) improve profit, and a vector of random coefficients between -1 and 1 that are mupltipled by the profit function to mimic the complexity inherent in any real economic landscape.
 
-To represent this definition of a landscape, this package contains a landscape class with slots for each of the above-mentioned parameters. 
+To represent this definition of a landscape, this package contains a landscape class with slots for each of the above-mentioned parameters (random profit coefficients are calculated using a function called profit_coeff()). A simplied example of one such landscape with a budget of $100 allocated among 10 nodes is as follows:
 
 ```{r}
-setClass("landscape", slots = c(nodes = "numeric", budget = "numeric", coeff = "vector", unit = "numeric"))
+landscape1 <- new ("landscape", nodes = 10, budget = 100, coeff = profit_coeff(nodes = 10), unit = 1)
 ```
 
-To generate random profit coefficients, this package uses the profit_coeff() function:
-```{r}
-profit_coeff <- function (nodes){     
-        sum <- 0
-        for (i in 1:nodes -1){
-                sum <- sum + i
-        }
-        number_of_coeff <- 2*nodes + sum
-        coeff_vec <- c()
-        for (i in 1:number_of_coeff){
-                new_coeff <- runif (1, min = -1, max = 1)
-                coeff_vec <- c(coeff_vec, new_coeff)
-        }
-        return(coeff_vec)
-}
-```
-
-A simplied example of one such landscape with a budget of $100 allocated among 25 nodes is as follows:
-```{r}
-landscape1 <- new ("landscape", nodes = 10, budget = 1000, coeff = profit_coeff(nodes = 10), unit = 1)
-```
-
-To represent the action of hillclimbing, this package allows the user to pick a random point on the landspace (or a randomly-generated budget allocation for the landscape parameters specified above) using the pick_point() function below, and calculates the profit for that budget allocation. 
+To represent the action of hillclimbing, this package allows the user to pick a random point on the landspace (or a randomly-generated budget allocation for the landscape parameters specified above) using the pick_point() function, and calculates the profit for that budget allocation. For example:
 
 ```{r}
-pick_point <- function (nodes, budget){
-        current <- sample(0:budget, 1)
-        budget_allocation <- c()
-        total <- 0
-        for (i in 1:nodes){
-                total <- total + current
-                budget_allocation <- c(budget_allocation, current)
-                if (i == nodes-1 || total == budget){
-                        current <- budget - total
-                }
-                else{
-                        current <- sample(0:(budget-total), 1)   
-                }
-        }
-        print(budget_allocation)
-        return(budget_allocation)
-}
-```
-```{r}
-point <- pick_point(nodes = 10,budget = 1000)
+point <- pick_point(nodes = 10,budget = 100)
+print(point)
 ```
 
-To reflect the complexity in any economic landscape, the profit function comprises the (linear) terms of the budget allocation vector, its squares, and its cross products. This vector, multipled by a set vector of random coefficients (described above), comprises the profit function for this landscape model.
+To reflect the complexity in any economic landscape, the profit() function comprises the (linear) terms of the budget allocation vector, its squares, and its cross products. This vector, multipled by a set vector of random coefficients (described above), comprises the profit function for this landscape model. The profit for the random point above, for example, is below:
 
-```{r}
-profit <- function(nodes, budget_A, coeff_vec){     
-        profit_sum <- c()
-        for (i in 1:nodes){
-                new_val <- budget_A[i]
-                profit_sum <- c(profit_sum, new_val)
-        }
-        for (i in 1:nodes){
-                new_val <- (budget_A[i])^2
-                profit_sum <- c(profit_sum, new_val)        
-        }
-        for (i in 1:(nodes-1)){
-                for (z in (i+1):nodes){
-                        new_val <- (budget_A[i]*budget_A[z])
-                        profit_sum <- c(profit_sum, new_val)
-                }
-        }
-        print(profit)
-        profit <- sum(profit_sum*coeff_vec)
-}
-```
 ```{r}
 profit_for_point <- profit(10, point, landscape1@coeff)
+print(profit_for_point)
 ```
 
-The package then can calculate all neighboring points (defined by the monetary unit of transfer) using the neighbors() function below and their profits using the same profit function (with the same coefficients). 
+The package then can calculate all neighboring points (defined by the monetary unit of transfer) using the neighbors() function and their profits using the profit_neighbors() function. Continuing with our example, we get:
 
 ```{r}
-neighbors <- function (nodes, budget_A){
-        grand <- matrix(ncol = nodes)
-        for (i in 1:nodes){
-                a <- i
-                new1 <- c(budget_A)
-                new1[i] <- new1[i] + 1
-                if (i==nodes){
-                        i <- 0
-                }
-                new1[i+1] <- new1[i+1] - 1
-                for (z in 1:nodes){
-                        if (new1[z]<0){
-                                new1 <- c()
-                                break
-                        }
-                }
-                new2 <- c(budget_A)
-                new2[a] <- new2[a] - 1
-                if (a==nodes){
-                        a <- 0
-                }
-                new2[a+1] <- new2[a+1] + 1
-                for (y in 1:nodes){
-                        if (new2[y]<0){
-                                new2 <- c()
-                                break
-                        }
-                }
-                grand <- rbind(grand, new1, new2)
-        }
-        dimnames(grand) <-list(rep("", dim(grand)[1]), rep("", dim(grand)[2]))
-        grand
-        valid_neighbors <- grand[complete.cases(grand),]
-        print(valid_neighbors)
-        return(valid_neighbors)
-}
-```
-```{r}
-neighbors_of_point <- neighbors(10, point)
-```
-```{r}
-profit_neighbors <- function(landscape, neighbors){
-        profit_vec <- c()
-        for (i in 1:nrow(neighbors)){
-                new_profit <- profit(landscape@nodes, neighbors[i,], landscape@coeff)
-                profit_vec <- c(profit_vec, new_profit)
-        }
-        print(profit_vec)
-        return (profit_vec)
-}
-```
-```{r}
-neighboring_profits <- profit_neighbors(landscape1, neighbors_of_point)
-```
-
-This package provides the user with the tools necessary to test out three different approaches to "economic hillclimbing," or finding local (ideally, the global) profit maxima for budget allocation. These strategies include steepest ascent (choosing the highest neighboring point as one's next budget allocation), median ascent (choosing the median neighboring point), and lowest ascent (choosing the lowest neighboring point whose profit is still above that of the current point or budget allocation). Below are functions for each respective strategy:
-
-```{r}
-steepest_ascent <- function (neighbors, neighbor_profits, point_profit){
-       pos_of_highest <- which.max(neighbor_profits)
-       if (neighbor_profits[pos_of_highest] < point_profit){
-               cat(sprintf("You've reached the local maxima of %f", point_profit))
-               return("!")
-       }
-       else{
-               next_point <- neighbors[pos_of_highest,]
-               return(next_point)    
-       }
-}
-```
-```{r}
-median_ascent <- function (neighbors, neighbor_profit, point_profit){
-        improvement <- neighbor_profit[neighbor_profit > point_profit]
-        if (length(improvement) == 0){
-                cat(sprintf("You've reached the local maxima of %f", point_profit))
-                return("!")
-        }
-        else{
-                median_profit <- median(improvement)
-                if (length(improvement) %% 2 == 0){
-                        median_profit <- neighbor_profit[which.min(abs(neighbor_profit-median_profit))]
-                }
-                pos <- match(median_profit, neighbor_profit)
-                return (neighbors[pos,])
-        }  
-}
-
-```
-```{r}
-least_ascent <- function (neighbors, neighbor_profit, point_profit){
-        improvement <- neighbor_profit[neighbor_profit > point_profit]
-        if (length(improvement) == 0){
-                cat(sprintf("You've reached the local maxima of %f", point_profit))
-                return("!")
-        }
-        else{
-                 new_profit <- min(improvement)
-                 print(new_profit)
-        }
-        pos <- match(new_profit, neighbor_profit)
-        return (neighbors[pos,])
-}
-```
-
-Using a function called hillclimb(), this package allows the user to iterate one of the three strategies (20 times) described above so as to determine the best strategy for economic hillclimbing in a complex landscape.
-```{r}
-hillclimb <- function (landscape, point, ascent_type){
-        sequence <- matrix(ncol = 4)
-        for (i in 1:20){
-                if (ascent_type == "steepest_ascent"){
-                        next_point <- steepest_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape3,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
-                }
-                if (ascent_type == "median_ascent"){
-                        next_point <- median_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape3,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
-                }
-                if (ascent_type == "least_ascent"){
-                        next_point <- least_ascent(neighbors(landscape@nodes, point), profit_neighbors(landscape3,neighbors(landscape@nodes, point)), profit(landscape@nodes, point, landscape@coeff))
-                }
-                        #print("next point")
-                if (class(next_point) == "character"){
-                        cat(sprintf("after the %.f iteration", i))
-                        break
-                }
-                else{
-                        sequence <- rbind(sequence, next_point)
-                        point <- next_point       
-                }
-                 
-        }
-        dimnames(sequence) <-list(rep("", dim(sequence)[1]), rep("", dim(sequence)[2]))
-        sequence
-        valid_sequence <- sequence[complete.cases(sequence),]
-        print(" ")
-        cat("Hillclimbing sequence:")
-        return(valid_sequence)
-}
+neighbors <- neighbors(10, point)
+print(neighbors)
 ```
 
 ```{r}
-steep_ascent <- hillclimb(landscape1, point, steepest_ascent)
-saveCache(steep_ascent)
+neighboring_profits <- profit_neighbors(landscape1, neighbors)
+print(neighboring_profits)
 ```
+
+This package provides the user with the tools necessary to test out three different approaches to "economic hillclimbing," or finding local (ideally, the global) profit maxima for budget allocation. These strategies include steepest ascent (choosing the highest neighboring point as one's next budget allocation), median ascent (choosing the median neighboring point), and least ascent (choosing the lowest neighboring point whose profit is still above that of the current point or budget allocation). 
 ```{r}
-med_ascent <- hillclimb(landscape1, point, median_ascent)
-saveCache(med_ascent)
+
 ```
+
+Here is the next point (or "jump") using each respective strategy from our sample point:
+
 ```{r}
-small_ascent <- hillclimb(landscape1, point, least_ascent)
-saveCache(small_ascent)
+steep <- steepest_ascent(neighbors, neighboring_profits, profit_for_point)
+print(steep)
 ```
 
 ```{r}
-data <- loadCache()
+med <- median_ascent(neighbors, neighboring_profits, profit_for_point)
+print(med)
 ```
 
-```{r fig.width=7, fig.height=6}
-plot(cars)
+```{r}
+least <- least_ascent(neighbors, neighboring_profits, profit_for_point)
+print(least)
 ```
+
+Using a function called hillclimb(), this package allows the user to hillclimb using one of the three strategies until it reaches a local maxima. Then, using the function average(), the user can iterate the hillclimb() function (each time starting at a random point on the landscape) so as to obtain several data points for each strategy and then average the local maxima profit points for each strategy.
+
+```{r cachedChunk, cache=TRUE}
+source("R/average.R")
+av <- average(landscape1)
+```
+
+```{r}
+matrix2 <- structure(av, .Dim = c(1L, 3L), .Dimnames = list(NULL, c("steepest ascent", 
+"median ascent", "least ascent")))
+kable(matrix2)
+```
+
 

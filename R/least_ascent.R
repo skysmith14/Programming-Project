@@ -10,12 +10,10 @@
 least_ascent <- function (neighbors, neighbor_profit, point_profit){
         improvement <- neighbor_profit[neighbor_profit > point_profit]
         if (length(improvement) == 0){
-                cat(sprintf("You've reached the local maxima of %f", point_profit))
-                return("!")
+                return(round(point_profit, 2))
         }
         else{
                  new_profit <- min(improvement)
-                 print(new_profit)
         }
         pos <- match(new_profit, neighbor_profit)
         return (neighbors[pos,])

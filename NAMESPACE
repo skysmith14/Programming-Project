@@ -1,3 +1,4 @@
+export(average)
 export(hillclimb)
 export(least_ascent)
 export(median_ascent)

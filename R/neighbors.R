@@ -39,6 +39,5 @@ neighbors <- function (nodes, budget_A){
         dimnames(grand) <-list(rep("", dim(grand)[1]), rep("", dim(grand)[2]))
         grand
         valid_neighbors <- grand[complete.cases(grand),]
-        #print(valid_neighbors)
         return(valid_neighbors)
 }

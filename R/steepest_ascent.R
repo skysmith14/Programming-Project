@@ -7,11 +7,10 @@
 #' @return The neighbor with the highest profit
 #' @export
 
-steepest_ascent <- function (neighbors, neighbor_profits, point_profit){
-       pos_of_highest <- which.max(neighbor_profits)
-       if (neighbor_profits[pos_of_highest] < point_profit){
-               cat(sprintf("You've reached the local maxima of %f", point_profit))
-               return("!")
+steepest_ascent <- function (neighbors, neighbor_prof, point_profit){
+       pos_of_highest <- which.max(neighbor_prof)
+       if (neighbor_prof[pos_of_highest] < point_profit){
+               return(round(point_profit, 2))
        }
        else{
                next_point <- neighbors[pos_of_highest,]

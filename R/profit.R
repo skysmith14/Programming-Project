@@ -23,7 +23,6 @@ profit <- function(nodes, budget_A, coeff_vec){
                         profit_sum <- c(profit_sum, new_val)
                 }
         }
-        profit <- sum(profit_sum*coeff_vec) 
-        return(profit)
+        profit_total <- sum(profit_sum*coeff_vec) 
 }
 
